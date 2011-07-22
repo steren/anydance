@@ -25,7 +25,9 @@
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 		<activity android:name=".DanceAnywhereActivity"
-			android:label="@string/app_name" android:configChanges="orientation|keyboardHidden">
+			android:label="@string/app_name" 
+			android:configChanges="keyboardHidden"
+			android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
