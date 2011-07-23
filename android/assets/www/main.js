@@ -1,3 +1,18 @@
+/**
+ * A record of bumps of accelerometer 
+ */
+function BumpRecord() {
+	/** the timestamp of the start of the simulation */
+	this.startTimestamp = new Date().getTime();
+	this.timestamps = [];
+	this.norms 		= [];
+	this.addBump = function(timestamp, norm) {
+		this.timestamps.push(timestamp - this.startTimestamp);
+		this.norms.push(norm);
+	};
+}
+
+
 var deviceInfo = function() {
     document.getElementById("platform").innerHTML = device.platform;
     document.getElementById("version").innerHTML = device.version;
@@ -19,9 +34,12 @@ function roundNumber(num) {
 
 var accelerationWatch = null;
 
+/** acceleration norm */
 var an, anmin, anmax;
-var bumps = 0;
-var bumptimestamp = 0;
+/** timestamp of the latest bump detected */
+var lastBumpTimestamp = 0;
+/** the currently recorded bumps */
+var bumps;
 
 function updateAcceleration(a) {
 	an = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
@@ -36,12 +54,12 @@ function updateAcceleration(a) {
 	if(an == 0) {
 		anmin = null;
 		anmax = null;
-		bumps = 0;
 	}
 	
-	if(an > 20 && a.timestamp - bumptimestamp > 500) {
-		bumps++;
-		bumptimestamp = a.timestamp;
+	// if we detect a bump
+	if(an > 20 && a.timestamp - lastBumpTimestamp > 500) {
+		lastBumpTimestamp = a.timestamp;
+		bumps.addBump(a.timestamp, an);
 	}
 	
     document.getElementById('x').innerHTML = roundNumber(a.x);
@@ -51,7 +69,7 @@ function updateAcceleration(a) {
     document.getElementById('norm').innerHTML = roundNumber( an );
     document.getElementById('normmin').innerHTML = roundNumber( anmin );
     document.getElementById('normmax').innerHTML = roundNumber( anmax );
-    document.getElementById('bumps').innerHTML = roundNumber( bumps );    
+    document.getElementById('bumps').innerHTML = roundNumber( bumps.timestamps.length );    
 }
 
 var toggleAccel = function() {
@@ -64,6 +82,7 @@ var toggleAccel = function() {
         });
         accelerationWatch = null;
     } else {
+    	bumps = new BumpRecord();
         var options = {};
         options.frequency = 100;
         accelerationWatch = navigator.accelerometer.watchAcceleration(
