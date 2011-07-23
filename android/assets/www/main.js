@@ -3,14 +3,37 @@
  */
 function BumpRecord() {
 	/** the timestamp of the start of the simulation */
-	this.startTimestamp = new Date().getTime();
+	this.startTimestamp = 0;
 	this.timestamps = [];
 	this.norms 		= [];
 	this.addBump = function(timestamp, norm) {
 		this.timestamps.push(timestamp - this.startTimestamp);
 		this.norms.push(norm);
 	};
+	/** the record is started */
+	this.start = function() {
+		this.startTimestamp = new Date().getTime();
+	}
+	/** 
+	 * compare with another BumpRecord object
+	 * @param BumpRecord record: record to compare to 
+	 */
+	this.compare = function( record ) {
+		var distance = 0;
+		for (var i = 0; i < this.timestamps.length; i++ ) {
+			if( i  < record.timestamps.length ) {
+				distance += Math.abs(this.timestamps[i] - record.timestamps[i]);
+			}
+		}
+		return distance;
+	}
 }
+
+var bumpsReference = new BumpRecord();
+bumpsReference.addBump(2000, 20);
+bumpsReference.addBump(4000, 20);
+bumpsReference.addBump(6000, 20);
+bumpsReference.addBump(8000, 20);
 
 
 var deviceInfo = function() {
@@ -74,15 +97,20 @@ function updateAcceleration(a) {
 
 var toggleAccel = function() {
     if (accelerationWatch !== null) {
-        navigator.accelerometer.clearWatch(accelerationWatch);
+    	navigator.accelerometer.clearWatch(accelerationWatch);
         updateAcceleration({
             x : 0,
             y : 0,
             z : 0
         });
         accelerationWatch = null;
+        
+        vibrate();
+        
+        alert("score: " + bumps.compare(bumpsReference));
     } else {
     	bumps = new BumpRecord();
+    	bumps.start();
         var options = {};
         options.frequency = 100;
         accelerationWatch = navigator.accelerometer.watchAcceleration(
