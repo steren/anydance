@@ -19,20 +19,48 @@ function roundNumber(num) {
 
 var accelerationWatch = null;
 
+var an, anmin, anmax;
+var bumps = 0;
+var bumptimestamp = 0;
+
 function updateAcceleration(a) {
+	an = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+
+	if( anmin == null || an < anmin ) {
+		anmin = an;
+	}
+	if( anmax == null || an > anmax ) {
+		anmax = an;
+	}
+	
+	if(an == 0) {
+		anmin = null;
+		anmax = null;
+		bumps = 0;
+	}
+	
+	if(an > 20 && a.timestamp - bumptimestamp > 500) {
+		bumps++;
+		bumptimestamp = a.timestamp;
+	}
+	
     document.getElementById('x').innerHTML = roundNumber(a.x);
     document.getElementById('y').innerHTML = roundNumber(a.y);
     document.getElementById('z').innerHTML = roundNumber(a.z);
     document.getElementById('timestamp').innerHTML = a.timestamp;
+    document.getElementById('norm').innerHTML = roundNumber( an );
+    document.getElementById('normmin').innerHTML = roundNumber( anmin );
+    document.getElementById('normmax').innerHTML = roundNumber( anmax );
+    document.getElementById('bumps').innerHTML = roundNumber( bumps );    
 }
 
 var toggleAccel = function() {
     if (accelerationWatch !== null) {
         navigator.accelerometer.clearWatch(accelerationWatch);
         updateAcceleration({
-            x : "",
-            y : "",
-            z : ""
+            x : 0,
+            y : 0,
+            z : 0
         });
         accelerationWatch = null;
     } else {
