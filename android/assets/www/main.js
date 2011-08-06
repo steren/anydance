@@ -2,9 +2,9 @@
  * A record of bumps of accelerometer 
  */
 function BumpRecord() {
-	/** the timestamp of the start of the simulation */
+	/** the absolute timestamp of the start of the simulation */
 	this.startTimestamp = 0;
-	/** ordered array of the timestamps (realTimestamp - startTimestamp) of the bumps */
+	/** ordered array of the timestamps ( relative to startTimestamp) of the bumps */
 	this.timestamps = [];
 	/** store the values of the bumps */
 	this.norms 		= [];
@@ -32,8 +32,8 @@ function BumpRecord() {
 	
 	/**
 	 * @param record : the record to compare to
-	 * @param tstart : (realTimestamp)
-	 * @param tend	 : (realTimestamp)
+	 * @param tstart : (absolute)
+	 * @param tend	 : (absolute)
 	 * @param startIndex (optional) : the index of the first timestamp that is after tstart
 	 */
 	this.compareRange = function ( record, tstart, tend, startIndex ) {
@@ -77,11 +77,9 @@ function BumpRecord() {
 }
 
 var bumpsReference = new BumpRecord();
-bumpsReference.addBump(2000, 20);
-bumpsReference.addBump(4000, 20);
-bumpsReference.addBump(6000, 20);
-bumpsReference.addBump(8000, 20);
-bumpsReference.addBump(10000, 20);
+for(var i = 0; i < 100; i++) {
+	bumpsReference.addBump(i * 2000, 20);
+}
 
 var deviceInfo = function() {
     document.getElementById("platform").innerHTML = device.platform;
@@ -109,7 +107,9 @@ var an, anmin, anmax;
 /** timestamp of the latest bump detected */
 var lastBumpTimestamp = 0;
 
+/** end absolute time of the latest comparison */
 var lastCompareEndTimestamp = 0;
+/** duration between two comparison*/
 var compareDuration = 5000;
 
 /** the currently recorded bumps */
@@ -137,17 +137,33 @@ function updateAcceleration(a) {
 	}
 	
 	// compare if necessary
-	// WIP
-	//if( a.timestamp > bumps.startTimestamp )
+	if( a.timestamp > lastCompareEndTimestamp + compareDuration ) {
+		var distanceRange = bumps.compareRange(bumpsReference, lastCompareEndTimestamp, lastCompareEndTimestamp + compareDuration);
+		lastCompareEndTimestamp += compareDuration;
+		
+		document.getElementById('distance').innerHTML = roundNumber( distanceRange );
+
+		var quality = "Bad";
+		if(distanceRange < 10) {
+			quality = "Perfect!";
+		} else if(distanceRange < 500) {
+			quality = "Excellent!";
+		} else if (distanceRange < 1000) {
+			quality = "Good!";
+		} else if (distanceRange < 2000) {
+			quality = "Ok";
+		}
+		document.getElementById('quality').innerHTML = quality;
+	}
 	
     document.getElementById('x').innerHTML = roundNumber(a.x);
     document.getElementById('y').innerHTML = roundNumber(a.y);
     document.getElementById('z').innerHTML = roundNumber(a.z);
-    document.getElementById('timestamp').innerHTML = a.timestamp;
+    document.getElementById('timestamp').innerHTML = a.timestamp - bumps.startTimestamp;
     document.getElementById('norm').innerHTML = roundNumber( an );
     document.getElementById('normmin').innerHTML = roundNumber( anmin );
     document.getElementById('normmax').innerHTML = roundNumber( anmax );
-    document.getElementById('bumps').innerHTML = roundNumber( bumps.timestamps.length );    
+    document.getElementById('bumps').innerHTML = roundNumber( bumps.timestamps.length );
 }
 
 var toggleAccel = function() {
@@ -166,6 +182,7 @@ var toggleAccel = function() {
     } else {
     	bumps = new BumpRecord();
     	bumps.start();
+    	lastCompareEndTimestamp = new Date().getTime();
         var options = {};
         options.frequency = 100;
         accelerationWatch = navigator.accelerometer.watchAcceleration(
@@ -192,7 +209,7 @@ var networkReachableCallback = function(reachability) {
 };
 
 function check_network() {
-    navigator.network.isReachable("www.mobiledevelopersolutions.com",
+    navigator.network.isReachable("www.google.com",
             networkReachableCallback, {});
 }
 
