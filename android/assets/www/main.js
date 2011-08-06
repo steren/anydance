@@ -109,8 +109,6 @@ var lastBumpTimestamp = 0;
 
 /** end absolute time of the latest comparison */
 var lastCompareEndTimestamp = 0;
-/** duration between two comparison*/
-var compareDuration = 5000;
 
 /** the currently recorded bumps */
 var /* BumpRecord */ bumps;
@@ -137,21 +135,21 @@ function updateAcceleration(a) {
 	}
 	
 	// compare if necessary
-	if( a.timestamp > lastCompareEndTimestamp + compareDuration ) {
-		var distanceRange = bumps.compareRange(bumpsReference, lastCompareEndTimestamp, lastCompareEndTimestamp + compareDuration);
-		lastCompareEndTimestamp += compareDuration;
+	if( a.timestamp > lastCompareEndTimestamp + COMPAREDURATION ) {
+		var distanceRange = bumps.compareRange(bumpsReference, lastCompareEndTimestamp, lastCompareEndTimestamp + COMPAREDURATION);
+		lastCompareEndTimestamp += COMPAREDURATION;
 		
 		document.getElementById('distance').innerHTML = roundNumber( distanceRange );
 
-		var quality = "Bad";
-		if(distanceRange < 10) {
-			quality = "Perfect!";
-		} else if(distanceRange < 500) {
-			quality = "Excellent!";
-		} else if (distanceRange < 1000) {
-			quality = "Good!";
-		} else if (distanceRange < 2000) {
-			quality = "Ok";
+		var quality = STRINGS["rangeScoreQuality.bad"];
+		if(distanceRange < MAX_RANGESCOREQUALITY_PERFECT) {
+			quality = STRINGS["rangeScoreQuality.perfect"];
+		} else if(distanceRange < MAX_RANGESCOREQUALITY_EXCELLENT) {
+			quality = STRINGS["rangeScoreQuality.excellent"];
+		} else if (distanceRange < MAX_RANGESCOREQUALITY_GOOD) {
+			quality = STRINGS["rangeScoreQuality.good"];
+		} else if (distanceRange < MAX_RANGESCOREQUALITY_OK) {
+			quality = STRINGS["rangeScoreQuality.ok"];
 		}
 		document.getElementById('quality').innerHTML = quality;
 	}
