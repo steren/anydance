@@ -4,7 +4,9 @@
 function BumpRecord() {
 	/** the timestamp of the start of the simulation */
 	this.startTimestamp = 0;
+	/** ordered array of the timestamps (realTimestamp - startTimestamp) of the bumps */
 	this.timestamps = [];
+	/** store the values of the bumps */
 	this.norms 		= [];
 	this.addBump = function(timestamp, norm) {
 		this.timestamps.push(timestamp - this.startTimestamp);
@@ -27,6 +29,51 @@ function BumpRecord() {
 		}
 		return distance;
 	}
+	
+	/**
+	 * @param record : the record to compare to
+	 * @param tstart : (realTimestamp)
+	 * @param tend	 : (realTimestamp)
+	 * @param startIndex (optional) : the index of the first timestamp that is after tstart
+	 */
+	this.compareRange = function ( record, tstart, tend, startIndex ) {
+		tstart = tstart - this.startTimestamp;
+		tend = tend - this.startTimestamp;
+		
+		// if no startIndex specified, find it
+		if(startIndex == null) {
+			for (var i = 0; i < this.timestamps.length; i++ ) { // TODO OPTIM use a binary search
+				if(this.timestamps[i] >= tstart) {
+					startIndex = i;
+					break;
+				}
+			}
+		}
+		
+		// find the portion of the record array that corresponds to this Range
+		var startRecordIndex;
+		for (var i = 0; i < record.timestamps.length; i++ ) {
+			if( record.timestamps[i] >= tstart ) {
+				startRecordIndex = i;
+				break;
+			}
+		}
+		var decay =  startRecordIndex - startIndex;
+		
+		var distance = 0;
+		var tendIndex = 0; 	// the index of the first timestamp after tend
+ 
+		// Compute the distance, this code may change
+		for (var i = startIndex; i < this.timestamps.length; i++ ) {
+			if( i + decay >= record.timestamps.length ) { break; }
+			if( this.timestamps[i] > tend ) { break; }
+			tendIndex = i;
+
+			distance += Math.abs(this.timestamps[i] - record.timestamps[i + decay]);
+		}
+		return distance;
+		// TODO return also tendIndex
+	}
 }
 
 var bumpsReference = new BumpRecord();
@@ -34,7 +81,7 @@ bumpsReference.addBump(2000, 20);
 bumpsReference.addBump(4000, 20);
 bumpsReference.addBump(6000, 20);
 bumpsReference.addBump(8000, 20);
-
+bumpsReference.addBump(10000, 20);
 
 var deviceInfo = function() {
     document.getElementById("platform").innerHTML = device.platform;
@@ -61,8 +108,12 @@ var accelerationWatch = null;
 var an, anmin, anmax;
 /** timestamp of the latest bump detected */
 var lastBumpTimestamp = 0;
+
+var lastCompareEndTimestamp = 0;
+var compareDuration = 5000;
+
 /** the currently recorded bumps */
-var bumps;
+var /* BumpRecord */ bumps;
 
 function updateAcceleration(a) {
 	an = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
@@ -84,6 +135,10 @@ function updateAcceleration(a) {
 		lastBumpTimestamp = a.timestamp;
 		bumps.addBump(a.timestamp, an);
 	}
+	
+	// compare if necessary
+	// WIP
+	//if( a.timestamp > bumps.startTimestamp )
 	
     document.getElementById('x').innerHTML = roundNumber(a.x);
     document.getElementById('y').innerHTML = roundNumber(a.y);
