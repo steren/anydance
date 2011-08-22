@@ -2,26 +2,31 @@
   <head>
     <title>AnyDance</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-    <script type="text/javascript" src="lib/swfobject/swfobject.js"></script>
+    
+    <!--<script type="text/javascript" src="lib/swfobject/swfobject.js"></script>-->
+    
+    <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+    <script type="text/javascript">
+      google.load("swfobject", "2.1");
+    </script>    
+    
     <script src="main.js"></script>
   </head>
   <body>
 
-<div id="dmapiplayer">
-    You need Flash player 9+ and JavaScript enabled to view this video.
+<div id="videoDiv">Loading...</div>
+
+<div id="videoInfo">
+	<p>Player state: <span id="playerState">--</span></p>
+	<p>Current Time: <span id="videoCurrentTime">--:--</span> | Duration: <span id="videoDuration">--:--</span></p>
+	<p>Bytes Total: <span id="bytesTotal">--</span> | Start Bytes: <span id="startBytes">--</span> | Bytes Loaded: <span id="bytesLoaded">--</span></p>
+	<p>Controls: <a href="javascript:void(0);" onclick="playVideo();">Play</a>
 </div>
 
-<script type="text/javascript">
-    var params = { allowScriptAccess: "always" };
-    var atts = { id: "mydmplayer" };
-    swfobject.embedSWF("http://www.dailymotion.com/swf/xikzey&enableApi=1&playerapiid=dmplayer",
-                       "dmapiplayer", "425", "356", "9", null, null, params, atts);
-                       // it seams that addind &chromeless=1 breaks it
-</script>
-
-<a href="javascript:dmplayer.playVideo()">Play</a>
-
-  </body>
+</body>
 </html>
 
 
+
+
+​
