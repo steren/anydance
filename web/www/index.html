@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>AnyDance</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/swfobject/swfobject.js"></script>
+    <script src="main.js"></script>
+  </head>
+  <body>
+
+<div id="dmapiplayer">
+    You need Flash player 9+ and JavaScript enabled to view this video.
+</div>
+
+<script type="text/javascript">
+    var params = { allowScriptAccess: "always" };
+    var atts = { id: "mydmplayer" };
+    swfobject.embedSWF("http://www.dailymotion.com/swf/xikzey&enableApi=1&playerapiid=dmplayer",
+                       "dmapiplayer", "425", "356", "9", null, null, params, atts);
+                       // it seams that addind &chromeless=1 breaks it
+</script>
+
+<a href="javascript:dmplayer.playVideo()">Play</a>
+
+  </body>
+</html>
+
+
