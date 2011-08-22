@@ -1,10 +1,19 @@
-var PLAYER = {
+/* enum */
+var PLAYERTYPE = {
 	YOUTUBE : 		"YT",
 	DAILYMOTION : 	"DM"
 }
 
-var currentPlayer = PLAYER.YOUTUBE;
-//var currentPlayer = PLAYER.DAILYMOTION;
+var PLAYERPARAMS = {
+	WIDTH: 480,
+	LENGTH: 295
+}
+
+var currentPlayer = PLAYERTYPE.YOUTUBE;
+//var currentPlayer = PLAYERTYPE.DAILYMOTION;
+
+// the Video Player object, it should implement the same methods than the Youtube player
+var videoplayer;
 
 //////////////
 // DAILYMOTION
@@ -13,7 +22,8 @@ var currentPlayer = PLAYER.YOUTUBE;
 // called when DM player is ready
 function onDailymotionPlayerReady(playerId)
 {
-  dmplayer = document.getElementById("mydmplayer");
+  videoplayer = document.getElementById("mydmplayer");
+  afterPlayerReady();
 }
 
 //////////
@@ -22,36 +32,32 @@ function onDailymotionPlayerReady(playerId)
 
 // called when YT player is ready
 function onYouTubePlayerReady(playerId) {
-	ytplayer = document.getElementById("ytPlayer");
+	videoplayer = document.getElementById("ytPlayer");
+	//Load an initial video into the player
+	videoplayer.cueVideoById("ylLzyHk54Z0");
+	afterPlayerReady();
+}
+
+//////////
+// BOTH
+//////////
+
+// Called after the player have been created
+function afterPlayerReady() {
+	videoplayer.addEventListener("onStateChange", "onPlayerStateChange");
+	videoplayer.addEventListener("onError", "onPlayerError");
 	// This causes the updatePlayerInfo function to be called every 250ms to
 	// get fresh data from the player
 	setInterval(updatePlayerInfo, 250);
 	updatePlayerInfo();
-	ytplayer.addEventListener("onStateChange", "onYTPlayerStateChange");
-	ytplayer.addEventListener("onError", "onYTPlayerError");
-	//Load an initial video into the player
-	ytplayer.cueVideoById("ylLzyHk54Z0");
 }
 // This function is called when an error is thrown by the player
-function onYTPlayerError(errorCode) {
+function onPlayerError(errorCode) {
 	alert("An error occured of type:" + errorCode);
 }
 // This function is called when the player changes state
-function onYTPlayerStateChange(newState) {
+function onPlayerStateChange(newState) {
 	updateHTML("playerState", newState);
-}
-
-///////////
-// Main App
-///////////
-
-// Play the current Video
-function playVideo() {
-	if (currentPlayer == PLAYER.YOUTUBE && ytplayer) {
-		ytplayer.playVideo();
-	} else if(currentPlayer == PLAYER.DAILYMOTION && dmplayer) {
-		dmplayer.playVideo();
-	}
 }
 
 //////////
@@ -63,20 +69,30 @@ function playVideo() {
 	document.getElementById(elmId).innerHTML = value;
 }
 
+///////////
+// Main App
+///////////
+
+// Play the current Video
+function playVideo() {
+	if (videoplayer) {
+		videoplayer.playVideo();
+	}
+}
+
+
 
 
 // Display information about the current state of the player
 function updatePlayerInfo() {
-	if(ytplayer && ytplayer.getDuration) {
-	  updateHTML("videoDuration", ytplayer.getDuration());
-	  updateHTML("videoCurrentTime", ytplayer.getCurrentTime());
-	  updateHTML("bytesTotal", ytplayer.getVideoBytesTotal());
-	  updateHTML("startBytes", ytplayer.getVideoStartBytes());
-	  updateHTML("bytesLoaded", ytplayer.getVideoBytesLoaded());
+	if(videoplayer && videoplayer.getDuration) {
+	  updateHTML("videoDuration", videoplayer.getDuration());
+	  updateHTML("videoCurrentTime", videoplayer.getCurrentTime());
+	  updateHTML("bytesTotal", videoplayer.getVideoBytesTotal());
+	  updateHTML("bytesLoaded", videoplayer.getVideoBytesLoaded());
 	}
 }
 
-// The "main method" of this sample. Called when someone clicks "Run".
 function loadYTPlayer() {
 	// Lets Flash from another domain call JavaScript
 	var params = { allowScriptAccess: "always" };
@@ -85,21 +101,21 @@ function loadYTPlayer() {
 	// All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
 	swfobject.embedSWF("http://www.youtube.com/apiplayer?" +
                    "version=3&enablejsapi=1&playerapiid=player1", 
-                   "videoDiv", "480", "295", "9", null, null, params, atts);
+                   "videoDiv", PLAYERPARAMS.WIDTH, PLAYERPARAMS.LENGTH, "9", null, null, params, atts);
 }
 
 function loadDMPlayer() {
     var params = { allowScriptAccess: "always" };
     var atts = { id: "mydmplayer" };
-    swfobject.embedSWF("http://www.dailymotion.com/swf/xikzey&enableApi=1&playerapiid=dmplayer",
-                       "videoDiv", "425", "356", "9", null, null, params, atts);
+    swfobject.embedSWF("http://www.dailymotion.com/swf/xikzey&enableApi=1&playerapiid=videoplayer",
+                       "videoDiv", PLAYERPARAMS.WIDTH, PLAYERPARAMS.LENGTH, "9", null, null, params, atts);
                        // it seams that addind &chromeless=1 breaks it
 }
 
 function _run() {
-	if (currentPlayer == PLAYER.YOUTUBE) {
+	if (currentPlayer == PLAYERTYPE.YOUTUBE) {
 		loadYTPlayer();
-	} else if(currentPlayer == PLAYER.DAILYMOTION) {
+	} else if(currentPlayer == PLAYERTYPE.DAILYMOTION) {
 		loadDMPlayer();
 	}
 }
