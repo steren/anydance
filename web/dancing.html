@@ -1,0 +1,35 @@
+<p id="nickname"></p>
+
+<input id="newPoints" type="number" value="10"/> <button id="sendNewScoreButton" >add Points</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+  var uuid = prompt('uuid ?', 'steren');
+  var nickname = prompt('user name ?', 'Panini');
+  document.getElementById("nickname").innerHTML = nickname;
+
+  var gameUUID = prompt('gameUUID ?', '');
+
+  var socket = io.connect('http://localhost');
+  
+  // send user data when connection is on
+  socket.on('connect', function () {
+    socket.emit('register new user', { uuid: uuid, gameUUID: gameUUID }, function(data){
+      if(data.error != null) {
+        console.error('game not found');
+        alert('game not found!');
+      } else {
+        // TODO change color and vibrate or whatever to confirm
+        console.info('DANCER REGISTERED', data);
+      }
+    });
+  });
+  
+  document.getElementById("sendNewScoreButton").onclick = function () {
+    var points = parseInt(document.getElementById("newPoints").value);
+    socket.emit('update user score', { points: points });
+  }
+</script>
+
+

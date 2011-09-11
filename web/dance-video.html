@@ -1,0 +1,33 @@
+<p>Room ID: <span id="gameUUID"></span></p>
+
+<ul id="scoreList">
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost');
+  
+  // register the game screen
+  socket.on('connect', function () {
+    socket.emit('register game', {some: 'data'}, function(data){
+      console.info('GAME REGISTERED', data.gameUUID);
+      // when game is registered, display the game ID
+      document.getElementById('gameUUID').innerHTML = data.gameUUID;
+    });
+  });
+  
+  socket.on('video update scores', function (data) {
+    console.debug('update scores', data);
+    var scoresHTML = "";
+    for( var uuid in data ) {
+      scoresHTML = scoresHTML + '<li>' + uuid + ' : ' + data[uuid] + '</li>';
+    }
+    document.getElementById('scoreList').innerHTML = scoresHTML;
+  });
+
+  socket.on('user disconnected', function (data) {
+    alert('stop! user disconnected');
+  });
+</script>
