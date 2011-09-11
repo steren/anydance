@@ -1,9 +1,11 @@
 {
-    "name": "application-name"
+    "name": "anydance-web"
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
       "express": "2.4.6"
     , "jade": ">= 0.0.1"
+    , "socket.io" : "0.8.3"
+    , "mongoose" : "2.1.0"
   }
 }
