@@ -1,5 +1,5 @@
 var bumpsReference = new BumpRecord();
-for(var i = 0; i < 100; i++) {
+for(var i = 1; i < 100; i++) {
 	bumpsReference.addBump(i * 2000, 20);
 }
 
