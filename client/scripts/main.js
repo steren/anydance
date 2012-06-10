@@ -139,4 +139,10 @@ function init() {
     document.addEventListener("deviceready", deviceInfo, true);
 }
 
+document.getElementById('accelbutton').onclick = toggleAccel;
+document.getElementById('checknetworkbutton').onclick = check_network;
+
+init();
+
+
 });

@@ -7,10 +7,7 @@
 	  <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	  <script type="text/javascript" charset="utf-8" src="../phonegap.0.9.6.js"></script>
 	  
-	  <script type="text/javascript" charset="utf-8" src="scripts/strings.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="scripts/conf.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="scripts/app/BumpRecord.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="scripts/main.js"></script>
+	  <script data-main="scripts/main" src="scripts/require.js"></script>
 
   </head>
   <body onload="init();" id="stage" class="theme">
@@ -33,10 +30,8 @@
       <dt>quality:</dt><dd id="quality">&nbsp;</dd>
     </dl>
     
-    <a href="#" class="btn large" onclick="toggleAccel();">Toggle Accelerometer</a>
-    <a href="#" class="btn large" onclick="check_network();">Check Network</a>
-    <div id="viewport" class="viewport" style="display: none;">       
-      <img style="width:60px;height:60px" id="test_img" src="" />
-    </div> 
+    <a href="#" class="btn large" id="accelbutton" >Toggle Accelerometer</a>
+    <a href="#" class="btn large" id="checknetworkbutton" >Check Network</a>
+
   </body>
 </html>
