@@ -6,35 +6,13 @@
     <title>Test Suite - AnyDance</title>
 	  <script type="text/javascript" charset="utf-8" src="phonegap.0.9.6.js"></script>
 
-	  <script type="text/javascript" charset="utf-8" src="strings.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="conf.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="app/BumpRecord.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="main.js"></script>
+	  <script data-main="scripts/test" src="scripts/require.js"></script>
 
   </head>
   <body>
   	<ol>
   		<li><span id="result1"></span>/50</li>
   		<li><span id="result2"></span>/20</li>
-  	</ol>
-  	
-  	<script>
-  	var bumpsTest0 = new BumpRecord();
-  	bumpsTest0.addBump(2000, 20);
-  	bumpsTest0.addBump(4000, 20);
-  	bumpsTest0.addBump(6000, 20);
-  	bumpsTest0.addBump(8000, 20);
-  	bumpsTest0.addBump(10000, 20);
-  	
-  	var bumpsTest1 = new BumpRecord();
-  	bumpsTest1.addBump(2010, 20);
-  	bumpsTest1.addBump(4010, 20);
-  	bumpsTest1.addBump(6010, 20);
-  	bumpsTest1.addBump(8010, 20);
-  	bumpsTest1.addBump(10010, 20);
-  	
-  	document.getElementById("result1").innerHTML = bumpsTest0.compare(bumpsTest1);
-  	document.getElementById("result2").innerHTML = bumpsTest0.compareRange(bumpsTest1, 5000, 9000);
-  	</script>
+  	</ol>	
   </body>
 </html>

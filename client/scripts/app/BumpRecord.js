@@ -1,13 +1,17 @@
 /**
+ * @class BumpRecord
  * A record of bumps of accelerometer 
  */
-function BumpRecord() {
+define(function() {
+
+return function() {
+
 	/** the absolute timestamp of the start of the simulation */
 	this.startTimestamp = 0;
 	/** ordered array of the timestamps ( relative to startTimestamp) of the bumps */
 	this.timestamps = [];
 	/** store the values of the bumps */
-	this.norms 		= [];
+	this.norms = [];
 	this.addBump = function(timestamp, norm) {
 		this.timestamps.push(timestamp - this.startTimestamp);
 		this.norms.push(norm);
@@ -15,11 +19,11 @@ function BumpRecord() {
 	/** the record is started */
 	this.start = function() {
 		this.startTimestamp = new Date().getTime();
-	}
+	};
 	/** 
-	 * compare with another BumpRecord object
-	 * @param BumpRecord record: record to compare to 
-	 */
+     * compare with another BumpRecord object
+     * @param BumpRecord record: record to compare to 
+     */
 	this.compare = function( record ) {
 		var distance = 0;
 		for (var i = 0; i < this.timestamps.length; i++ ) {
@@ -28,20 +32,20 @@ function BumpRecord() {
 			}
 		}
 		return distance;
-	}
+	};
 	
 	/**
-	 * @param record : the record to compare to
-	 * @param tstart : (absolute)
-	 * @param tend	 : (absolute)
-	 * @param startIndex (optional) : the index of the first timestamp that is after tstart
-	 */
+     * @param record : the record to compare to
+     * @param tstart : (absolute)
+     * @param tend : (absolute)
+     * @param startIndex (optional) : the index of the first timestamp that is after tstart
+     */
 	this.compareRange = function ( record, tstart, tend, startIndex ) {
 		tstart = tstart - this.startTimestamp;
 		tend = tend - this.startTimestamp;
 		
 		// if no startIndex specified, find it
-		if(startIndex == null) {
+		if(!startIndex) {
 			for (var i = 0; i < this.timestamps.length; i++ ) { // TODO OPTIM use a binary search
 				if(this.timestamps[i] >= tstart) {
 					startIndex = i;
@@ -61,7 +65,7 @@ function BumpRecord() {
 		var decay =  startRecordIndex - startIndex;
 		
 		var distance = 0;
-		var tendIndex = 0; 	// the index of the first timestamp after tend
+		var tendIndex = 0; // the index of the first timestamp after tend
  
 		// Compute the distance, this code may change
 		for (var i = startIndex; i < this.timestamps.length; i++ ) {
@@ -73,5 +77,7 @@ function BumpRecord() {
 		}
 		return distance;
 		// TODO return also tendIndex
-	}
-}
+	};
+    
+};
+});

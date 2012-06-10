@@ -1,3 +1,5 @@
+require(["app/BumpRecord", "conf", "strings"], function(BumpRecord, conf, Strings) {
+    
 var bumpsReference = new BumpRecord();
 for(var i = 1; i < 100; i++) {
 	bumpsReference.addBump(i * 2000, 20);
@@ -57,21 +59,21 @@ function updateAcceleration(a) {
 	}
 	
 	// compare if necessary
-	if( a.timestamp > lastCompareEndTimestamp + COMPAREDURATION ) {
-		var distanceRange = bumps.compareRange(bumpsReference, lastCompareEndTimestamp, lastCompareEndTimestamp + COMPAREDURATION);
-		lastCompareEndTimestamp += COMPAREDURATION;
+	if( a.timestamp > lastCompareEndTimestamp + conf.COMPAREDURATION ) {
+		var distanceRange = bumps.compareRange(bumpsReference, lastCompareEndTimestamp, lastCompareEndTimestamp + conf.COMPAREDURATION);
+		lastCompareEndTimestamp += conf.COMPAREDURATION;
 		
 		document.getElementById('distance').innerHTML = roundNumber( distanceRange );
 
-		var quality = STRINGS["rangeScoreQuality.bad"];
-		if(distanceRange < MAX_RANGESCOREQUALITY_PERFECT) {
-			quality = STRINGS["rangeScoreQuality.perfect"];
-		} else if(distanceRange < MAX_RANGESCOREQUALITY_EXCELLENT) {
-			quality = STRINGS["rangeScoreQuality.excellent"];
-		} else if (distanceRange < MAX_RANGESCOREQUALITY_GOOD) {
-			quality = STRINGS["rangeScoreQuality.good"];
-		} else if (distanceRange < MAX_RANGESCOREQUALITY_OK) {
-			quality = STRINGS["rangeScoreQuality.ok"];
+		var quality = Strings["rangeScoreQuality.bad"];
+		if(distanceRange < conf.MAX_RANGESCOREQUALITY_PERFECT) {
+			quality = Strings["rangeScoreQuality.perfect"];
+		} else if(distanceRange < conf.MAX_RANGESCOREQUALITY_EXCELLENT) {
+			quality = Strings["rangeScoreQuality.excellent"];
+		} else if (distanceRange < conf.MAX_RANGESCOREQUALITY_GOOD) {
+			quality = Strings["rangeScoreQuality.good"];
+		} else if (distanceRange < conf.MAX_RANGESCOREQUALITY_OK) {
+			quality = Strings["rangeScoreQuality.ok"];
 		}
 		document.getElementById('quality').innerHTML = quality;
 	}
@@ -100,9 +102,9 @@ var toggleAccel = function() {
         
         alert("score: " + bumps.compare(bumpsReference));
     } else {
-    	bumps = new BumpRecord();
-    	bumps.start();
-    	lastCompareEndTimestamp = new Date().getTime();
+        bumps = new BumpRecord();
+        bumps.start();
+        lastCompareEndTimestamp = new Date().getTime();
         var options = {};
         options.frequency = 100;
         accelerationWatch = navigator.accelerometer.watchAcceleration(
@@ -136,3 +138,5 @@ function check_network() {
 function init() {
     document.addEventListener("deviceready", deviceInfo, true);
 }
+
+});
